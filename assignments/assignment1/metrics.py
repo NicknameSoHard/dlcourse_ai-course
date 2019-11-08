@@ -29,9 +29,13 @@ def binary_classification_metrics(prediction, ground_truth):
     # Finally
     precision = true_positive / (true_positive + false_positive)
     recall = true_positive / (true_positive + false_negative)
-    accuracy = (true_positive + true_negative) \
-               / (true_positive + true_negative + false_positive + false_negative)
-    f1 = (1+b) * (precision * recall) / ((b**2 * precision) + recall)
+    accuracy = (true_positive + true_negative) / \
+               (true_positive + true_negative + false_positive + false_negative)
+
+    if recall != 0:
+        f1 = (1+b) * (precision * recall) / ((b**2 * precision) + recall)
+    else:
+        f1 = 0
 
     return precision, recall, f1, accuracy
 

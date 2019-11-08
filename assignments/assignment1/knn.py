@@ -113,12 +113,10 @@ class KNN:
         num_test = dists.shape[0]
         pred = np.zeros(num_test, np.bool)
         for i in range(num_test):
-            a = self.train_y[np.argsort(dists[i])[:self.k]]
-            u, indices = np.unique(a, return_counts=True)
-
-            # МЫ НАШЛИ ИНДЕКСЫ К МАКСИМАЛЬНЫХ ЭЛЕМЕНТОВ
-            pred[i] = u#[True if index == max_result else False for index in self.train_y]
-
+            index_k_nearest_x = np.argsort(dists[i])[:self.k]
+            k_nearest_x_y = self.train_y[index_k_nearest_x]
+            pred[i] = True if sum(k_nearest_x_y) > self.k else False
+#            u, indices = np.unique(a, return_counts=True)
         return pred
 
     def predict_labels_multiclass(self, dists):
