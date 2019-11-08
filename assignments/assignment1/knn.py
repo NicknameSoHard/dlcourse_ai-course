@@ -94,8 +94,6 @@ class KNN:
         '''
         num_train = self.train_X.shape[0]
         num_test = X.shape
-        # Using float32 to to save memory - the default is float64
-        dists = np.zeros((num_test[0], num_train), np.float32)
         ref_X = np.reshape(X, (num_test[0], 1, num_test[1]))  # or [:, np.newaxis]
         dists = np.sum(np.abs(ref_X - self.train_X), axis=2)
         return dists
@@ -119,7 +117,7 @@ class KNN:
             u, indices = np.unique(a, return_counts=True)
 
             # МЫ НАШЛИ ИНДЕКСЫ К МАКСИМАЛЬНЫХ ЭЛЕМЕНТОВ
-            pred[i] = a[]
+            pred[i] = u#[True if index == max_result else False for index in self.train_y]
 
         return pred
 

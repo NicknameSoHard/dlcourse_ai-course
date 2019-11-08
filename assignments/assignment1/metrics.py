@@ -9,17 +9,29 @@ def binary_classification_metrics(prediction, ground_truth):
     Returns:
     precision, recall, f1, accuracy - classification metrics
     '''
-    precision = ground_truth.shape[0] / prediction.shape[0]
-    recall = 0
-    accuracy = 0
-    f1 = 0
+    b = 1
 
-    # TODO: implement metrics!
-    # Some helpful links:
-    # https://en.wikipedia.org/wiki/Precision_and_recall
-    # https://en.wikipedia.org/wiki/F1_score
+    shape = prediction.shape[0]
+    index_true_in_test = [index for index in range(shape) if ground_truth[index]]
+    true_positive_index = [index for index in index_true_in_test if prediction[index]]
+    false_negative_index = list(set(index_true_in_test) - set(true_positive_index))
 
+    true_positive = len(true_positive_index)
+    false_negative = len(false_negative_index)
 
+    index_false_in_test = list(set(range(shape)) - set(index_true_in_test))
+    false_positive_index = [index for index in index_false_in_test if not prediction[index]]
+    true_negative_index = list(set(index_false_in_test) - set(false_positive_index))
+
+    false_positive = len(false_positive_index)
+    true_negative = len(true_negative_index)
+
+    # Finally
+    precision = true_positive / (true_positive + false_positive)
+    recall = true_positive / (true_positive + false_negative)
+    accuracy = (true_positive + true_negative) \
+               / (true_positive + true_negative + false_positive + false_negative)
+    f1 = (1+b) * (precision * recall) / ((b**2 * precision) + recall)
 
     return precision, recall, f1, accuracy
 
