@@ -11,20 +11,20 @@ def binary_classification_metrics(prediction, ground_truth):
     '''
     b = 1
 
-    shape = prediction.shape[0]
-    index_true_in_test = [index for index in range(shape) if ground_truth[index]]
-    true_positive_index = [index for index in index_true_in_test if prediction[index]]
-    false_negative_index = list(set(index_true_in_test) - set(true_positive_index))
+    true_positive = 0
+    false_positive = 0
+    true_negative = 0
+    false_negative = 0
 
-    true_positive = len(true_positive_index)
-    false_negative = len(false_negative_index)
-
-    index_false_in_test = list(set(range(shape)) - set(index_true_in_test))
-    false_positive_index = [index for index in index_false_in_test if not prediction[index]]
-    true_negative_index = list(set(index_false_in_test) - set(false_positive_index))
-
-    false_positive = len(false_positive_index)
-    true_negative = len(true_negative_index)
+    for i in range(len(ground_truth)):
+        if prediction[i] == ground_truth[i] == 1:
+            true_positive += 1
+        if ground_truth[i] == 1 and prediction[i] != ground_truth[i]:
+            false_positive += 1
+        if prediction[i] == ground_truth[i] == 0:
+            true_negative += 1
+        if ground_truth[i] == 0 and prediction[i] != ground_truth[i]:
+            false_negative += 1
 
     # Finally
     precision = true_positive / (true_positive + false_positive)
@@ -32,10 +32,7 @@ def binary_classification_metrics(prediction, ground_truth):
     accuracy = (true_positive + true_negative) / \
                (true_positive + true_negative + false_positive + false_negative)
 
-    if recall != 0:
-        f1 = (1+b) * (precision * recall) / ((b**2 * precision) + recall)
-    else:
-        f1 = 0
+    f1 = (1+b) * (precision * recall) / ((b**2 * precision) + recall)
 
     return precision, recall, f1, accuracy
 

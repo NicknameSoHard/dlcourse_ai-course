@@ -1,4 +1,5 @@
 import numpy as np
+import collections
 
 
 class KNN:
@@ -92,7 +93,7 @@ class KNN:
         dists, np array (num_test_samples, num_train_samples) - array
            with distances between each test and each train sample
         '''
-        num_train = self.train_X.shape[0]
+
         num_test = X.shape
         ref_X = np.reshape(X, (num_test[0], 1, num_test[1]))  # or [:, np.newaxis]
         dists = np.sum(np.abs(ref_X - self.train_X), axis=2)
@@ -115,8 +116,9 @@ class KNN:
         for i in range(num_test):
             index_k_nearest_x = np.argsort(dists[i])[:self.k]
             k_nearest_x_y = self.train_y[index_k_nearest_x]
-            pred[i] = True if sum(k_nearest_x_y) > self.k else False
-#            u, indices = np.unique(a, return_counts=True)
+            count = collections.Counter(k_nearest_x_y)
+            pred[i] = count.most_common()[0][0]
+#            u, indices = np.unique(a, re
         return pred
 
     def predict_labels_multiclass(self, dists):
