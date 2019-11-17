@@ -1,4 +1,5 @@
 import numpy as np
+import collections
 
 
 class KNN:
@@ -92,10 +93,8 @@ class KNN:
         dists, np array (num_test_samples, num_train_samples) - array
            with distances between each test and each train sample
         '''
-        num_train = self.train_X.shape[0]
+
         num_test = X.shape
-        # Using float32 to to save memory - the default is float64
-        dists = np.zeros((num_test[0], num_train), np.float32)
         ref_X = np.reshape(X, (num_test[0], 1, num_test[1]))  # or [:, np.newaxis]
         dists = np.sum(np.abs(ref_X - self.train_X), axis=2)
         return dists
@@ -115,12 +114,11 @@ class KNN:
         num_test = dists.shape[0]
         pred = np.zeros(num_test, np.bool)
         for i in range(num_test):
-            a = self.train_y[np.argsort(dists[i])[:self.k]]
-            u, indices = np.unique(a, return_counts=True)
-
-            # МЫ НАШЛИ ИНДЕКСЫ К МАКСИМАЛЬНЫХ ЭЛЕМЕНТОВ
-            pred[i] = a[]
-
+            index_k_nearest_x = np.argsort(dists[i])[:self.k]
+            k_nearest_x_y = self.train_y[index_k_nearest_x]
+            count = collections.Counter(k_nearest_x_y)
+            pred[i] = count.most_common()[0][0]
+#            u, indices = np.unique(a, re
         return pred
 
     def predict_labels_multiclass(self, dists):
