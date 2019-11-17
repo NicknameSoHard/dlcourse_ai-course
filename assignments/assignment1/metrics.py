@@ -10,24 +10,7 @@ def binary_classification_metrics(prediction, ground_truth):
     precision, recall, f1, accuracy - classification metrics
     '''
     b = 1
-    """
-    shape = prediction.shape[0]
-    index_true_in_test = [index for index in range(shape) if ground_truth[index]]
-    true_positive_index = [index for index in index_true_in_test if prediction[index]]
-    false_negative_index = list(set(index_true_in_test) - set(true_positive_index))
 
-    true_positive = len(true_positive_index)
-    false_negative = len(false_negative_index)
-
-    index_false_in_test = [index for index in range(shape) if not ground_truth[index]]#list(set(range(shape)) - set(index_true_in_test))
-    false_positive_index = [index for index in index_false_in_test if not prediction[index]]
-    true_negative_index = list(set(index_false_in_test) - set(false_positive_index))
-
-    false_positive = len(false_positive_index)
-    true_negative = len(true_negative_index)
-
-    print(true_positive)
-    """
     prediction = prediction
     y_hat = ground_truth
 
@@ -68,5 +51,12 @@ def multiclass_accuracy(prediction, ground_truth):
     Returns:
     accuracy - ratio of accurate predictions to total samples
     '''
-    # TODO: Implement computing accuracy
-    return 0
+    true_labels = 0
+    prediction_size = prediction.shape[0]
+    for i in range(prediction_size):
+        if prediction[i] == ground_truth[i]:
+            true_labels += 1
+
+    accuracy = true_labels / prediction_size
+
+    return accuracy

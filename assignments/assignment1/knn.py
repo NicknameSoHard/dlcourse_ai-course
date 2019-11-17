@@ -53,13 +53,13 @@ class KNN:
         num_train = self.train_X.shape[0]
         num_test = X.shape[0]
         dists = np.zeros((num_test, num_train), np.float32)
+
         for i_test in range(num_test):
             test = X[i_test]
             for i_train in range(num_train):
                 dists[i_test][i_train] = np.sum(np.abs(test - self.train_X[i_train]))
 
         return dists
-
 
     def compute_distances_one_loop(self, X):
         '''
@@ -118,7 +118,6 @@ class KNN:
             k_nearest_x_y = self.train_y[index_k_nearest_x]
             count = collections.Counter(k_nearest_x_y)
             pred[i] = count.most_common()[0][0]
-#            u, indices = np.unique(a, re
         return pred
 
     def predict_labels_multiclass(self, dists):
@@ -134,10 +133,9 @@ class KNN:
            for every test sample
         '''
         num_test = dists.shape[0]
-        num_test = dists.shape[0]
         pred = np.zeros(num_test, np.int)
         for i in range(num_test):
-            # TODO: Implement choosing best class based on k
-            # nearest training samples
-            pass
+            index_k_nearest_x = np.argsort(dists[i])[:self.k]
+            k_nearest_x_y = [self.train_y[x] for x in index_k_nearest_x]
+            pred[i] = max(k_nearest_x_y)
         return pred
