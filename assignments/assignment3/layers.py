@@ -111,39 +111,35 @@ class ConvolutionalLayer:
 
         self.padding = padding
 
-
     def forward(self, X):
         batch_size, height, width, channels = X.shape
 
-        out_height = 0
-        out_width = 0
-        
-        # TODO: Implement forward pass
-        # Hint: setup variables that hold the result
-        # and one x/y location at a time in the loop below
-        
-        # It's ok to use loops for going over width and height
-        # but try to avoid having any other loops
+        out_height = (height - self.filter_size + 2 * self.padding) + 1
+        out_width = (width - self.filter_size + 2 * self.padding) + 1
+
+        result = np.zeros([batch_size, out_height, out_width, self.out_channels])
+
+        b = self.B.value
+        W = self.W.value
         for y in range(out_height):
             for x in range(out_width):
-                # TODO: Implement forward pass for specific location
-                pass
-        raise Exception("Not implemented!")
+                filter_matrix_size = self.filter_size*self.filter_size*self.in_channels
 
+                x_value = X[:, y: y + self.filter_size, x: x + self.filter_size, :]
+                x_reshaped = x_value.reshape(batch_size, filter_matrix_size)
+
+                w_value = W[:, y: y + self.filter_size, x: x + self.filter_size, :]
+                w_reshaped = w_value.reshape(filter_matrix_size, self.out_channels)
+
+                res = np.dot(x_reshaped, w_reshaped) + b
+                result[:, y, x, :] = res
+        return result
 
     def backward(self, d_out):
-        # Hint: Forward pass was reduced to matrix multiply
-        # You already know how to backprop through that
-        # when you implemented FullyConnectedLayer
-        # Just do it the same number of times and accumulate gradients
-
-        batch_size, height, width, channels = X.shape
+        batch_size, height, width, channels = X.value.shape
         _, out_height, out_width, out_channels = d_out.shape
 
-        # TODO: Implement backward pass
-        # Same as forward, setup variables of the right shape that
-        # aggregate input gradient and fill them for every location
-        # of the output
+        d_input = np.zeros_like(X.value)
 
         # Try to avoid having any other loops here too
         for y in range(out_height):
@@ -156,7 +152,7 @@ class ConvolutionalLayer:
         raise Exception("Not implemented!")
 
     def params(self):
-        return { 'W': self.W, 'B': self.B }
+        return {'W': self.W, 'B': self.B }
 
 
 class MaxPoolingLayer:
