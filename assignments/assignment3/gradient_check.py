@@ -18,24 +18,31 @@ def check_gradient(f, x, delta=1e-5, tol=1e-4):
     assert isinstance(x, np.ndarray)
     assert x.dtype == np.float
 
+    orig_x = x.copy()
     fx, analytic_grad = f(x)
+    assert np.all(np.isclose(orig_x, x, tol)), "Functions shouldn't modify input variables"
+
+    assert analytic_grad.shape == x.shape, f"{analytic_grad.shape}, {x.shape}"
     analytic_grad = analytic_grad.copy()
 
-    assert analytic_grad.shape == x.shape
-
+    # We will go through every dimension of x and compute numeric
+    # derivative for it
     it = np.nditer(x, flags=['multi_index'], op_flags=['readwrite'])
     while not it.finished:
         ix = it.multi_index
         analytic_grad_at_ix = analytic_grad[ix]
-        numeric_grad_at_ix = 0
-
-        # TODO Copy from previous assignment
-        raise Exception("Not implemented!")
+        mask = np.zeros(x.shape)
+        mask[ix] = delta
+        x_plus_delta = x + mask
+        x_minus_delta = x - mask
+        f_plus_delta = f(x_plus_delta)[0]
+        f_minus_delta = f(x_minus_delta)[0]
+        numeric_grad_at_ix = (f_plus_delta - f_minus_delta) / (2 * delta)
 
         if not np.isclose(numeric_grad_at_ix, analytic_grad_at_ix, tol):
             print("Gradients are different at %s. Analytic: %2.5f, Numeric: %2.5f" % (
                   ix, analytic_grad_at_ix, numeric_grad_at_ix))
-            return False
+            #return False
 
         it.iternext()
 
@@ -46,16 +53,15 @@ def check_gradient(f, x, delta=1e-5, tol=1e-4):
 def check_layer_gradient(layer, x, delta=1e-5, tol=1e-4):
     """
     Checks gradient correctness for the input and output of a layer
-
     Arguments:
       layer: neural network layer, with forward and backward functions
       x: starting point for layer input
       delta: step to compute numerical gradient
       tol: tolerance for comparing numerical and analytical gradient
-
     Returns:
       bool indicating whether gradients match or not
     """
+    # output is 2 1 1 2
     output = layer.forward(x)
     output_weight = np.random.randn(*output.shape)
 
@@ -74,14 +80,12 @@ def check_layer_param_gradient(layer, x,
                                delta=1e-5, tol=1e-4):
     """
     Checks gradient correctness for the parameter of the layer
-
     Arguments:
       layer: neural network layer, with forward and backward functions
       x: starting point for layer input
       param_name: name of the parameter
       delta: step to compute numerical gradient
       tol: tolerance for comparing numerical and analytical gradient
-
     Returns:
       bool indicating whether gradients match or not
     """
@@ -107,21 +111,19 @@ def check_model_gradient(model, X, y,
                          delta=1e-5, tol=1e-4):
     """
     Checks gradient correctness for all model parameters
-
     Arguments:
       model: neural network model with compute_loss_and_gradients
       X: batch of input data
       y: batch of labels
       delta: step to compute numerical gradient
       tol: tolerance for comparing numerical and analytical gradient
-
     Returns:
       bool indicating whether gradients match or not
     """
     params = model.params()
 
     for param_key in params:
-        print("Checking gradient for %s" % param_key)
+        print("Checking gradient for %s" % str(param_key))
         param = params[param_key]
         initial_w = param.value
 

@@ -12,7 +12,6 @@ def binary_classification_metrics(prediction, ground_truth):
     b = 1
 
     prediction = prediction
-    y_hat = ground_truth
 
     true_positive = 0
     false_positive = 0
@@ -29,7 +28,6 @@ def binary_classification_metrics(prediction, ground_truth):
         if ground_truth[i] == 0 and prediction[i] != ground_truth[i]:
             false_negative += 1
 
-    # Finally
     precision = true_positive / (true_positive + false_positive)
     recall = true_positive / (true_positive + false_negative)
     accuracy = (true_positive + true_negative) / \
